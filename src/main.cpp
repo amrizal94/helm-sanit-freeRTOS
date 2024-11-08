@@ -12,7 +12,7 @@ const char* password = "cuybot123";
 
 OTA ota("cuybot");
 
-TokenTask tokenTask(10); // Timer countdown awal
+TokenTask tokenTask(10, 25, 26); // Countdown awal, relay mist maker di pin 25, relay UV di pin 26
 DisplayTask displayTask(tokenTask);
 CoinAcceptorTask coinAcceptor(tokenTask);
 

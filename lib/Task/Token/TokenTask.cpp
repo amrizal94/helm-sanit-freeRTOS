@@ -1,9 +1,15 @@
 #include <Token/TokenTask.h>
 #include <Display/DisplayTask.h>  // Tambahkan ini untuk akses ke DisplayTask
 
-TokenTask::TokenTask(int initialTime)
-    : _remainingTime(initialTime), _timerHandle(NULL), _displayTask(nullptr)
+TokenTask::TokenTask(int initialTime, int relayPinMist, int relayPinUV)
+    : _remainingTime(initialTime), _timerHandle(NULL), _displayTask(nullptr),
+    _relayPinMist(relayPinMist), _relayPinUV(relayPinUV)
 {
+    pinMode(_relayPinMist, OUTPUT);
+    pinMode(_relayPinUV, OUTPUT);
+    digitalWrite(_relayPinMist, LOW); // Matikan relay mist maker saat inisialisasi
+    digitalWrite(_relayPinUV, LOW);   // Matikan relay lampu UV saat inisialisasi
+
 }
 
 TokenTask::~TokenTask() {
@@ -25,6 +31,10 @@ void TokenTask::startTask() {
         if (_timerHandle != NULL) {
             xTimerStart(_timerHandle, 0); // Mulai timer
             Serial.println("Countdown timer started.");
+
+            // Aktifkan relay saat countdown dimulai
+            digitalWrite(_relayPinMist, HIGH); // Nyalakan relay mist maker
+            digitalWrite(_relayPinUV, HIGH);   // Nyalakan relay lampu UV
         }
     }
 }
@@ -33,6 +43,10 @@ void TokenTask::stopTask() {
     if (_timerHandle != NULL) {
         xTimerStop(_timerHandle, 0); // Hentikan timer
         Serial.println("Countdown completed!");
+
+        // Matikan relay ketika countdown selesai
+        digitalWrite(_relayPinMist, LOW); // Matikan relay mist maker
+        digitalWrite(_relayPinUV, LOW);   // Matikan relay lampu UV
 
         // Kirim pesan ke DisplayTask untuk menampilkan pesan "Masukkan Koin"
         if (_displayTask != nullptr) {

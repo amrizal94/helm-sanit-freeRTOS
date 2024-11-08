@@ -7,7 +7,7 @@ class DisplayTask; // Forward declaration
 
 class TokenTask {
 public:
-    TokenTask(int initialTime = 0);
+    TokenTask(int initialTime, int relayPinMist, int relayPinUV);
     ~TokenTask();
 
     void startTask();              // Memulai countdown timer
@@ -19,6 +19,9 @@ public:
 
 private:
     static void runTask(TimerHandle_t xTimer); // Callback untuk countdown
+
+    int _relayPinMist;
+    int _relayPinUV;
 
     TimerHandle_t _timerHandle;
     uint16_t _remainingTime;
