@@ -1,36 +1,25 @@
 #include <Arduino.h>
-#include <LiquidCrystal_I2C.h>
 #include <OTA/OTA.h>
 #include <WiFi.h>
 #include <ESPmDNS.h>
-#include <IR/IR.h>
-#include <Coin/Coin.h>
-#include <CoinReading/CoinTask.h>
-
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-// COIN PIN
-#define COIN_PIN 19
-
-Coin coin(COIN_PIN);
+#include <Display/DisplayTask.h>
+#include <Token/TokenTask.h>
+#include <Coin/CoinAcceptorTask.h>
 
 // WIFI CONF
 #define SSID "cuybot"
 const char* password = "cuybot123";
 
-// put function declarations here:
-int myFunction(int, int);
 OTA ota("cuybot");
 
-CoinTask coinTask(coin);
+TokenTask tokenTask(10); // Timer countdown awal
+DisplayTask displayTask(tokenTask);
+CoinAcceptorTask coinAcceptor(tokenTask);
 
 void setup() {
   // put your setup code here, to run once:
-  int result = myFunction(2, 3);
-  lcd.init();
-  lcd.backlight();
-  lcd.setCursor(0, 0);
-  lcd.print("Setting up WiFi");
+  Serial.begin(9600);
+  displayTask.initDisplay();
 
   String macAddr = WiFi.macAddress();
   String lastFourCharMacAddr = macAddr.substring(macAddr.length() - 4);
@@ -51,20 +40,12 @@ void setup() {
     Serial.println("Setting up OTA service...");
     ota.begin();
     ota.startOTATask();
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Sanitasi");
-    lcd.setCursor(0, 1);
-    lcd.print("Berhasil");
 
-    coinTask.startTask();
+    tokenTask.startTask(); // Memulai task countdown di TokenTask
+    displayTask.startDisplayTask(); // Memulai task tampilan
+    coinAcceptor.begin();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
 }

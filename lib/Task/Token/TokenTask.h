@@ -1,25 +1,28 @@
-#if !defined(TOKENTASK_H)
+#ifndef TOKENTASK_H
 #define TOKENTASK_H
-#include <LiquidCrystal_I2C.h>
 
-class TokenTask
-{
-private:
-    static void runTask(void *pvParameters);
-    const uint32_t _taskStackSize = 4096;
-    const UBaseType_t _taskPriority = 5;
-    TaskHandle_t _taskHandle;
+#include <Arduino.h>
 
-    const uint16_t _timeIncrement = 5 * 60;
-    uint16_t _remainingTime;
+class DisplayTask; // Forward declaration
+
+class TokenTask {
 public:
-    TokenTask(/* args */);
+    TokenTask(int initialTime = 0);
     ~TokenTask();
 
-    void startTask();
-    void stopTask();
-    void addTime();
-    uint16_t getRemainingTime();
+    void startTask();              // Memulai countdown timer
+    void stopTask();               // Menghentikan countdown timer
+    void addTime(int timeToAdd);   // Menambahkan waktu ke countdown
+    uint16_t getRemainingTime();   // Mendapatkan waktu yang tersisa
+
+    void setDisplayTask(DisplayTask* display); // Set DisplayTask untuk komunikasi
+
+private:
+    static void runTask(TimerHandle_t xTimer); // Callback untuk countdown
+
+    TimerHandle_t _timerHandle;
+    uint16_t _remainingTime;
+    DisplayTask* _displayTask;     // Pointer ke DisplayTask untuk menampilkan pesan
 };
 
 #endif // TOKENTASK_H
