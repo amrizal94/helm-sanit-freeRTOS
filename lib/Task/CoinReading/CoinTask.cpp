@@ -1,4 +1,5 @@
 #include <CoinReading/CoinTask.h>
+
 CoinTask::CoinTask(Coin &coin): _coin(coin), _taskHandle(NULL)
 {
 }

@@ -5,8 +5,14 @@
 #include <ESPmDNS.h>
 #include <IR/IR.h>
 #include <Coin/Coin.h>
+#include <CoinReading/CoinTask.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// COIN PIN
+#define COIN_PIN 19
+
+Coin coin(COIN_PIN);
 
 // WIFI CONF
 #define SSID "cuybot"
@@ -15,6 +21,8 @@ const char* password = "cuybot123";
 // put function declarations here:
 int myFunction(int, int);
 OTA ota("cuybot");
+
+CoinTask coinTask(coin);
 
 void setup() {
   // put your setup code here, to run once:
@@ -48,6 +56,8 @@ void setup() {
     lcd.print("Sanitasi");
     lcd.setCursor(0, 1);
     lcd.print("Berhasil");
+
+    coinTask.startTask();
 }
 
 void loop() {
